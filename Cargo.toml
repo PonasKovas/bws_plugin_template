@@ -10,4 +10,5 @@ crate-type = ["cdylib"]
 async-net = "1.6"
 futures-lite = "*"
 async-ffi = "0.3"
+#bws_plugin = { git = "https://github.com/PonasKovas/bws_plugin.git" }
 bws_plugin = { path = "../bws_plugin" }

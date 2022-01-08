@@ -13,9 +13,9 @@ static BWS_ABI_VERSION: u64 = ((async_ffi::ABI_VERSION as u64) << 32)
 
 #[repr(C)]
 struct PluginStructure {
-    name: BwsStr<'static>,
+    name: BwsString,
     version: BwsTuple3<u64, u64, u64>,
-    dependencies: BwsSlice<'static, BwsTuple2<BwsStr<'static>, BwsStr<'static>>>,
+    dependencies: BwsVec<BwsTuple2<BwsString, BwsString>>,
     entry: PluginEntrySignature,
 }
 
@@ -28,10 +28,20 @@ unsafe extern "C" fn bws_library_init(register: unsafe extern "C" fn(PluginStruc
     }));
 
     register(PluginStructure {
-        name: BwsStr::from_str("test_plugin"),
+        name: BwsString::from_string("test-plugin".to_owned()),
         version: BwsTuple3(0, 1, 0),
-        dependencies: BwsSlice::from_slice(&[]),
-        entry: entry,
+        dependencies: BwsVec::from_vec(vec![BwsTuple2(
+            BwsString::from_string("anti-grief".to_owned()),
+            BwsString::from_string("=0.75.0".to_owned()),
+        )]),
+        entry,
+    });
+
+    register(PluginStructure {
+        name: BwsString::from_string("anti-grief".to_owned()),
+        version: BwsTuple3(0, 75, 1),
+        dependencies: BwsVec::from_vec(vec![]),
+        entry,
     });
 }
 
