@@ -2,7 +2,7 @@
 
 use async_ffi::{FfiFuture, FutureExt};
 use bws_plugin::prelude::*;
-use bws_plugin::PluginEntrySignature;
+use bws_plugin::register::{PluginEntrySignature, RegPluginStruct};
 
 const ABI_VERSION: u16 = 0;
 
@@ -11,38 +11,19 @@ static BWS_ABI_VERSION: u64 = ((async_ffi::ABI_VERSION as u64) << 32)
     | ((bws_plugin::BWS_PLUGIN_ABI_VERSION as u64) << 16)
     | ABI_VERSION as u64;
 
-#[repr(C)]
-struct PluginStructure {
-    name: BwsString,
-    version: BwsTuple3<u64, u64, u64>,
-    dependencies: BwsVec<BwsTuple2<BwsString, BwsString>>,
-    entry: PluginEntrySignature,
-}
-
 #[no_mangle]
-unsafe extern "C" fn bws_library_init(register: unsafe extern "C" fn(PluginStructure)) {
+unsafe extern "C" fn bws_library_init(register: unsafe extern "C" fn(RegPluginStruct)) {
     std::panic::set_hook(Box::new(|info| {
         let bt = std::backtrace::Backtrace::capture();
         println!("Plugin 'test_plugin' {}", info);
         println!("{}", bt);
     }));
 
-    register(PluginStructure {
-        name: BwsString::from_string("test-plugin".to_owned()),
-        version: BwsTuple3(0, 1, 0),
-        dependencies: BwsVec::from_vec(vec![BwsTuple2(
-            BwsString::from_string("anti-grief".to_owned()),
-            BwsString::from_string("=0.75.0".to_owned()),
-        )]),
-        entry,
-    });
+    Plugin::new("test-plugin", (1, 0, 0), entry)
+        .add_dep("anti-grief", "=0.75.0")
+        .register(register);
 
-    register(PluginStructure {
-        name: BwsString::from_string("anti-grief".to_owned()),
-        version: BwsTuple3(0, 75, 1),
-        dependencies: BwsVec::from_vec(vec![]),
-        entry,
-    });
+    Plugin::new("anti-grief", (0, 75, 1), entry).register(register);
 }
 
 extern "C" fn entry(
