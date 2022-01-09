@@ -1,6 +1,6 @@
 #![feature(backtrace)]
 
-use async_ffi::{FfiFuture, FutureExt};
+use async_ffi::{FfiFuture, FutureExt, LocalFfiFuture};
 use bws_plugin::prelude::*;
 use bws_plugin::register::RegPluginStruct;
 use bws_plugin::vtable::BwsVTable;
@@ -27,36 +27,19 @@ unsafe extern "C" fn bws_library_init(register: unsafe extern "C" fn(RegPluginSt
 extern "C" fn entry(
     _name: BwsString,
     vtable: BwsVTable,
-    mut event_receiver: *const (),
+    event_receiver: SendPtr<()>,
     // global_state: BwsGlobalState,
 ) -> FfiFuture<BwsUnit> {
     // initialize the vtable
     bws_plugin::vtable::init(vtable);
 
     async move {
-        // loop {
-        //     match (&mut gate).await {
-        //         Some(mut guard) => {
-        //             let event = guard.event();
-        //             println!(
-        //                 "Received {:?} event. port: {}",
-        //                 event,
-        //                 global_state.get_port()
-        //             );
-        //             match event.id {
-        //                 0 => unsafe {
-        //                     event.data.cast::<bool>().write(true);
-        //                 },
-        //                 _ => {}
-        //             }
-        //             guard.finish();
-        //         }
-        //         None => {
-        //             // Channel dead... :(
-        //             break;
-        //         }
-        //     }
-        // }
+        while let Some(event) = bws_plugin::receive_event(event_receiver).await {
+            println!(
+                "received event [{}]\n{:x}\n{:x}",
+                event.0, event.1 .0 as usize, event.2 .0 as usize
+            );
+        }
 
         unit()
     }
