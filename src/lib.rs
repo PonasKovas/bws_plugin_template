@@ -33,6 +33,7 @@ extern "C" fn entry(
     async move {
         while let Some(event) = unsafe { bws_plugin::receive_event(event_receiver).await } {
             bws_plugin::log(
+                "template",
                 format!(
                     "received event\n[{}]\n{:x}\n{:x}",
                     event.0, event.1 .0 as usize, event.2 .0 as usize
