@@ -1,8 +1,9 @@
 #![feature(backtrace)]
+#![deny(unsafe_op_in_unsafe_fn)]
 
 use async_ffi::{FfiFuture, FutureExt, LocalFfiFuture};
 use bws_plugin::prelude::*;
-use bws_plugin::register::RegPluginStruct;
+use bws_plugin::register::{Plugin, RegPluginStruct};
 use bws_plugin::vtable::BwsVTable;
 
 #[no_mangle]
@@ -17,10 +18,6 @@ unsafe extern "C" fn bws_library_init(register: unsafe extern "C" fn(RegPluginSt
         println!("{}", bt);
     }));
 
-    // Plugin::new("test-plugin", (1, 0, 0), entry)
-    //     .add_dep("anti-grief", "=0.75.0")
-    //     .register(register);
-
     Plugin::new("anti-grief", (0, 75, 1), entry).register(register);
 }
 
@@ -34,11 +31,18 @@ extern "C" fn entry(
     bws_plugin::vtable::init(vtable);
 
     async move {
-        while let Some(event) = bws_plugin::receive_event(event_receiver).await {
-            println!(
-                "received event [{}]\n{:x}\n{:x}",
-                event.0, event.1 .0 as usize, event.2 .0 as usize
+        while let Some(event) = unsafe { bws_plugin::receive_event(event_receiver).await } {
+            bws_plugin::log(
+                format!(
+                    "received event\n[{}]\n{:x}\n{:x}",
+                    event.0, event.1 .0 as usize, event.2 .0 as usize
+                ),
+                bws_plugin::LogLevel::Info,
             );
+
+            unsafe {
+                bws_plugin::finish_event_handling(event.2);
+            }
         }
 
         unit()
