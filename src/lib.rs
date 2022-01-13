@@ -44,6 +44,14 @@ extern "C" fn entry(
             unsafe {
                 bws_plugin::finish_event_handling(event.2);
             }
+            bws_plugin::spawn_task(
+                async move {
+                    loop {
+                        bws_plugin::log("template", "task abuse", bws_plugin::LogLevel::Error);
+                    }
+                }
+                .into_ffi(),
+            );
         }
 
         unit()
