@@ -1,7 +1,7 @@
 #![feature(backtrace)]
 #![deny(unsafe_op_in_unsafe_fn)]
 
-use async_ffi::{FfiFuture, FutureExt, LocalFfiFuture};
+use async_ffi::{FfiFuture, FutureExt};
 use bws_plugin::prelude::*;
 use bws_plugin::register::{Plugin, RegPluginStruct};
 use bws_plugin::vtable::BwsVTable;
