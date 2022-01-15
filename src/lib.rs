@@ -46,9 +46,25 @@ extern "C" fn entry(
             }
             bws_plugin::spawn_task(
                 async move {
+                    let (mut shutdown_receiver, shutdown_atomic) =
+                        bws_plugin::shutdown::register_for_graceful_shutdown();
                     loop {
+                        if futures_lite::future::poll_once(&mut shutdown_receiver)
+                            .await
+                            .is_some()
+                        {
+                            bws_plugin::log(
+                                "template",
+                                "Cleaning up plugin task",
+                                bws_plugin::LogLevel::Info,
+                            );
+                            bws_plugin::shutdown::gracefully_exited(shutdown_atomic);
+                            break;
+                        }
                         bws_plugin::log("template", "task abuse", bws_plugin::LogLevel::Error);
                     }
+
+                    unit()
                 }
                 .into_ffi(),
             );
