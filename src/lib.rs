@@ -1,5 +1,6 @@
 #![feature(backtrace)]
 #![deny(unsafe_op_in_unsafe_fn)]
+#![allow(unused_imports)]
 
 use async_ffi::{FfiFuture, FutureExt};
 use bws_plugin::prelude::*;
@@ -42,8 +43,9 @@ extern "C" fn entry(
             );
 
             unsafe {
-                bws_plugin::finish_event_handling(event.2);
+                bws_plugin::finish_event_handling(event.2, false);
             }
+            return unit();
             bws_plugin::spawn_task(
                 async move {
                     let (mut shutdown_receiver, shutdown_atomic) =
