@@ -7,8 +7,5 @@ edition = "2021"
 crate-type = ["cdylib"]
 
 [dependencies]
-async-net = "1.6"
-futures-lite = "*"
-async-ffi = "0.3"
-#bws_plugin = { git = "https://github.com/PonasKovas/bws_plugin.git" }
-bws_plugin = { path = "../bws_plugin" }
+bws_plugin_interface = { path = "../bws_plugin_interface" }
+abi_stable = "0.10"
