@@ -1,6 +1,7 @@
 use abi_stable::std_types::{RSlice, RStr, RVec, Tuple2};
 use bws_plugin_interface::{
     debug, error,
+    extra::Extra,
     global_state::{vtable::LogLevel, GState},
     info, trace, warn, BwsPlugin,
 };
@@ -15,12 +16,12 @@ static BWS_PLUGIN_ROOT: BwsPlugin = BwsPlugin {
     dependencies: RSlice::from_slice(&[]),
     enable,
     disable,
+    extra: Extra {},
 };
 
 fn enable(gstate: &GState) {
     info!(@gstate, "Started");
 }
 fn disable(gstate: &GState) {
-    error!(@gstate, "Stopped");
     info!(@gstate, "Stopped");
 }
