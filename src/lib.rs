@@ -9,4 +9,13 @@ static BWS_PLUGIN_ROOT: BwsPlugin = BwsPlugin {
     name: RStr::from_str("plugin_template"),
     version: RStr::from_str(env!("CARGO_PKG_VERSION")),
     dependencies: RSlice::from_slice(&[]),
+    enable,
+    disable,
 };
+
+fn enable() {
+    println!("Plugin template enabled");
+}
+fn disable() {
+    println!("Plugin template disabled");
+}
