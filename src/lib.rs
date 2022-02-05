@@ -16,7 +16,7 @@ static BWS_PLUGIN_ROOT: BwsPlugin = BwsPlugin {
     dependencies: RSlice::from_slice(&[]),
     enable,
     disable,
-    extra: Extra {},
+    extra: Extra::new(),
 };
 
 fn enable(gstate: &GState) {
