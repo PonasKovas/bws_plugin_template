@@ -7,7 +7,7 @@ use bws_plugin_interface::{
 };
 
 #[no_mangle]
-static BWS_ABI: u32 = bws_plugin_interface::ABI;
+static BWS_ABI: u64 = bws_plugin_interface::ABI;
 
 #[no_mangle]
 static BWS_PLUGIN_ROOT: BwsPlugin = BwsPlugin {
